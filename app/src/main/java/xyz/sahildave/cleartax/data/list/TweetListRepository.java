@@ -16,15 +16,15 @@ public interface TweetListRepository {
 
         void onFetchTokenComplete();
 
-        void onTweetListLoading(int page, int listSize);
+        void onTweetListLoading(long page, int listSize);
 
-        void onTweetListLoaded(List<Tweet> tweets, int page, boolean success);
+        void onTweetListLoaded(List<Tweet> tweets, long page, boolean success);
     }
 
     interface GetTweetCallback {
         void onTweetLoaded(Tweet Tweet, boolean success);
     }
 
-    void getTweets(TweetListContract.View contextView, int page,
+    void getTweets(TweetListContract.View contextView,
                    @NonNull LoadTweetListCallback callback, int limit);
 }

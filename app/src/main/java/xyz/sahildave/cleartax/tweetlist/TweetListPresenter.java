@@ -25,7 +25,6 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
     private final TweetListContract.View mTweetListView;
 
 
-    private int currentPage = 1;
     private int visibleThreshold = 2;
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
@@ -48,7 +47,6 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                 if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                     loading = true;
-                    ++currentPage;
                 }
             }
         });
@@ -57,13 +55,12 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
     @Override
     public void loadTweets(boolean forceUpdate) {
         if (forceUpdate) {
-            currentPage = 1;
             mTweetListView.showEmpty();
         }
 
         Timber.d("loadTweets: %s", "forceUpdate = [" + forceUpdate + "]");
 
-        mTweetListRepository.getTweets(mTweetListView, currentPage, new TweetListRepository.LoadTweetListCallback() {
+        mTweetListRepository.getTweets(mTweetListView, new TweetListRepository.LoadTweetListCallback() {
             @Override
             public void onFetchTokenStarted() {
                 mTweetListView.setProgressIndicator(true, "Fetching Token");
@@ -75,12 +72,12 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
             }
 
             @Override
-            public void onTweetListLoading(int page, int listSize) {
-                mTweetListView.setProgressIndicator(true, "Fetched " + listSize+" tweets, Page - "+page);
+            public void onTweetListLoading(long sinceId, int listSize) {
+                mTweetListView.setProgressIndicator(true, "Fetched " + listSize+" tweets");
             }
 
             @Override
-            public void onTweetListLoaded(List<Tweet> tweets, int page, boolean complete) {
+            public void onTweetListLoaded(List<Tweet> tweets, long page, boolean complete) {
                 Timber.d("onTweetListLoaded: %s", "tweets = [" + tweets.size());
                 mTweetListView.setTweets(tweets);
 
@@ -144,8 +141,10 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
         }
 
         @Override
-        public int compareTo(final WordCount b) {
-            return Integer.compare(this.count, b.count);
+        public int compareTo(final WordCount that) {
+            int lhs = this.count;
+            int rhs = that.count;
+            return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
         }
 
         public int getCount() {

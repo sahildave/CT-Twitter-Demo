@@ -15,7 +15,7 @@ public interface TwitterListService {
     }
 
     interface TweetListServiceCallbacks<T> {
-        void onTweetsLoaded(T tweets, int page);
+        void onTweetsLoaded(List<Tweet> tweets, long page);
     }
 
     void init();
@@ -25,6 +25,6 @@ public interface TwitterListService {
     void getToken(TweetListContract.View contextView,
                   TweetTokenCallback callback);
 
-    void getAllTweets(TweetListContract.View contextView, int page,
+    void getAllTweets(TweetListContract.View contextView, long page,
                       String token, TweetListServiceCallbacks<List<Tweet>> callback);
 }

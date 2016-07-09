@@ -111,7 +111,7 @@ public class TwitterListServiceImpl implements TwitterListService {
     }
 
     @Override
-    public void getAllTweets(TweetListContract.View contextView, final int page,
+    public void getAllTweets(TweetListContract.View contextView, final long sinceId,
                              final String token, final TweetListServiceCallbacks<List<Tweet>> callback) {
         checkNotNull(twitterApiService);
         checkNotNull(token);
@@ -144,6 +144,8 @@ public class TwitterListServiceImpl implements TwitterListService {
 
         Map<String, Object> fieldMap = new ArrayMap<>();
         fieldMap.put("q", "cleartax%20-%23cleartax%20-%40cleartax_in");
+        fieldMap.put("count", "100");
+        fieldMap.put("since_id", sinceId);
         Call<SearchResult> call = twitterApiService.getTweets(fieldMap);
         call.enqueue(new Callback<SearchResult>() {
             @Override
@@ -151,15 +153,17 @@ public class TwitterListServiceImpl implements TwitterListService {
                 Timber.d("onResponse: %s", "call = [" + call + "], response = [" + response + "]");
                 if (response != null && response.isSuccessful()) {
                     SearchResult result = response.body();
-                    callback.onTweetsLoaded(result.getTweets(), page);
+                    List<Tweet> tweets = result.getTweets();
+                    long lastId = tweets.get(tweets.size() - 1).getId();
+                    callback.onTweetsLoaded(tweets, lastId);
                 } else {
-                    callback.onTweetsLoaded(null, page);
+                    callback.onTweetsLoaded(null, 0);
                 }
             }
 
             @Override
             public void onFailure(Call<SearchResult> call, Throwable t) {
-                callback.onTweetsLoaded(null, page);
+                callback.onTweetsLoaded(null, 0);
             }
         });
     }

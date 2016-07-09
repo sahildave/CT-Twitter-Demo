@@ -30,10 +30,8 @@ class InMemoryTweetListRepository implements TweetListRepository {
     }
 
     @Override
-    public void getTweets(final TweetListContract.View contextView, final int page,
+    public void getTweets(final TweetListContract.View contextView,
                           @NonNull final LoadTweetListCallback callback, final int limit) {
-        Timber.d("getTweets: %s", "contextView = [" + contextView + "], page = [" + page + "], callback = [" + callback + "]"); checkNotNull(callback);
-        // Load from API only if needed.
         if (!mTokenReceived  || mToken ==null) {
             mTweetListServiceApi.getToken(contextView, new TwitterListService.TweetTokenCallback() {
 
@@ -48,36 +46,36 @@ class InMemoryTweetListRepository implements TweetListRepository {
                         callback.onFetchTokenComplete();
                         mTokenReceived = true;
                         mToken = token;
-                        getTweetsInner(token, callback, contextView, page, limit);
+                        getTweetsInner(token, callback, contextView, 0, limit);
                     } else {
                         mTokenReceived = false;
                     }
                 }
             });
         } else {
-            Timber.d("Searching for page - %s, token - %s", page, mToken);
-            getTweetsInner(mToken, callback, contextView, page, limit);
+            getTweetsInner(mToken, callback, contextView, 0, limit);
 
         }
 
     }
 
-    private void getTweetsInner(String token, @NonNull final LoadTweetListCallback callback, final TweetListContract.View contextView, int page, final int limit) {
-        Timber.d("Loading Inner more - %s, %s, %s", page, mTweetList.size(), limit);
-        callback.onTweetListLoading(page, mTweetList.size());
-        mTweetListServiceApi.getAllTweets(contextView, page, token, new TwitterListService.TweetListServiceCallbacks<List<Tweet>>() {
+    private void getTweetsInner(String token, @NonNull final LoadTweetListCallback callback,
+                                final TweetListContract.View contextView, long sinceId, final int limit) {
+        Timber.d("Loading Inner more - %s, %s, %s", sinceId, mTweetList.size(), limit);
+        callback.onTweetListLoading(sinceId, mTweetList.size());
+        mTweetListServiceApi.getAllTweets(contextView, sinceId, token, new TwitterListService.TweetListServiceCallbacks<List<Tweet>>() {
             @Override
-            public void onTweetsLoaded(List<Tweet> tweets, int page) {
+            public void onTweetsLoaded(List<Tweet> tweets, long sinceId) {
                 if (tweets == null) {
                     return;
                 }
                 addToTweetList(tweets);
                 if (mTweetList.size() < limit) {
-                    getTweetsInner(mToken, callback, contextView, ++page, limit);
+                    getTweetsInner(mToken, callback, contextView, sinceId, limit);
                 } else {
-                    callback.onTweetListLoaded(mTweetList, page, true);
+                    callback.onTweetListLoaded(mTweetList, sinceId, true);
                 }
-                callback.onTweetListLoading(page, mTweetList.size());
+                callback.onTweetListLoading(sinceId, mTweetList.size());
             }
         });
         // TODO: 9/7/16 Filter more tweets by  entities.urls[n].display_url
