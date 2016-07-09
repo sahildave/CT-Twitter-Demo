@@ -22,9 +22,8 @@ public interface TwitterListService {
 
     void destroy();
 
-    void getToken(TweetListContract.View contextView,
-                  TweetTokenCallback callback);
+    void getToken(TweetTokenCallback callback);
 
-    void getAllTweets(TweetListContract.View contextView, long page,
+    void getAllTweets(long page,
                       String token, TweetListServiceCallbacks<List<Tweet>> callback);
 }

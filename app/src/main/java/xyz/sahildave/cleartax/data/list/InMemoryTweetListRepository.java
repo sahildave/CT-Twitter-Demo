@@ -8,7 +8,6 @@ import java.util.List;
 import timber.log.Timber;
 import xyz.sahildave.cleartax.data.api.TwitterListService;
 import xyz.sahildave.cleartax.data.model.Tweet;
-import xyz.sahildave.cleartax.tweetlist.TweetListContract;
 
 import static xyz.sahildave.cleartax.util.Common.checkNotNull;
 
@@ -29,11 +28,15 @@ class InMemoryTweetListRepository implements TweetListRepository {
         Timber.d("InMemoryTweetListRepository: %s", "TweetListServiceApi = [" + TweetListServiceApi + "]");
     }
 
+    /**
+     * Fetch token if not present. Use that token to start #getTweetsInner
+     *  @param callback callback to the view
+     * @param limit limit to number of tweets. Currently 100
+     */
     @Override
-    public void getTweets(final TweetListContract.View contextView,
-                          @NonNull final LoadTweetListCallback callback, final int limit) {
+    public void getTweets(@NonNull final LoadTweetListCallback callback, final int limit) {
         if (!mTokenReceived  || mToken ==null) {
-            mTweetListServiceApi.getToken(contextView, new TwitterListService.TweetTokenCallback() {
+            mTweetListServiceApi.getToken(new TwitterListService.TweetTokenCallback() {
 
                 @Override
                 public void onTokenStarted() {
@@ -46,24 +49,35 @@ class InMemoryTweetListRepository implements TweetListRepository {
                         callback.onFetchTokenComplete();
                         mTokenReceived = true;
                         mToken = token;
-                        getTweetsInner(token, callback, contextView, 0, limit);
+                        getTweetsInner(token, callback, 0, limit);
                     } else {
                         mTokenReceived = false;
                     }
                 }
             });
         } else {
-            getTweetsInner(mToken, callback, contextView, 0, limit);
+            getTweetsInner(mToken, callback, 0, limit);
 
         }
 
     }
 
+    /**
+     * For prod/dev see {@link xyz.sahildave.cleartax.data.api.TwitterListServiceImpl}
+     * If the received tweets are less the limit, redo search
+     *
+     * todo Make it efficient by using since_id and limits in request params
+     *
+     *  @param token received from oAuth call
+     * @param callback callback to the view
+     * @param sinceId twitter param for pagination
+     * @param limit
+     */
     private void getTweetsInner(String token, @NonNull final LoadTweetListCallback callback,
-                                final TweetListContract.View contextView, long sinceId, final int limit) {
+                                long sinceId, final int limit) {
         Timber.d("Loading Inner more - %s, %s, %s", sinceId, mTweetList.size(), limit);
         callback.onTweetListLoading(sinceId, mTweetList.size());
-        mTweetListServiceApi.getAllTweets(contextView, sinceId, token, new TwitterListService.TweetListServiceCallbacks<List<Tweet>>() {
+        mTweetListServiceApi.getAllTweets(sinceId, token, new TwitterListService.TweetListServiceCallbacks<List<Tweet>>() {
             @Override
             public void onTweetsLoaded(List<Tweet> tweets, long sinceId) {
                 if (tweets == null) {
@@ -71,7 +85,7 @@ class InMemoryTweetListRepository implements TweetListRepository {
                 }
                 addToTweetList(tweets);
                 if (mTweetList.size() < limit) {
-                    getTweetsInner(mToken, callback, contextView, sinceId, limit);
+                    getTweetsInner(mToken, callback, sinceId, limit);
                 } else {
                     callback.onTweetListLoaded(mTweetList, sinceId, true);
                 }

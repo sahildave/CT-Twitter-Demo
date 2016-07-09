@@ -25,6 +25,5 @@ public interface TweetListRepository {
         void onTweetLoaded(Tweet Tweet, boolean success);
     }
 
-    void getTweets(TweetListContract.View contextView,
-                   @NonNull LoadTweetListCallback callback, int limit);
+    void getTweets(@NonNull LoadTweetListCallback callback, int limit);
 }

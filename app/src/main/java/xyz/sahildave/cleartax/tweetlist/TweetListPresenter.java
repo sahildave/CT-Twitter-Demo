@@ -35,6 +35,10 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
         mTweetListView = checkNotNull(tweetListView);
     }
 
+    /**
+     * Can be used for creating pagination in the recyclerview
+     * @param recyclerView
+     */
     @Override
     public void setupTweetRecycler(RecyclerView recyclerView) {
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -42,7 +46,6 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                 if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
@@ -52,15 +55,21 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
         });
     }
 
+
+    /**
+     * Gets tweet from the repo provided by {@link TweetListActivity}
+     * For prod/dev {@link xyz.sahildave.cleartax.data.list.InMemoryTweetListRepository}
+     * Process the tweets for the most used words.
+     * Sends back the tweets and the most used words map.
+     * @param forceUpdate
+     */
     @Override
     public void loadTweets(boolean forceUpdate) {
         if (forceUpdate) {
             mTweetListView.showEmpty();
         }
 
-        Timber.d("loadTweets: %s", "forceUpdate = [" + forceUpdate + "]");
-
-        mTweetListRepository.getTweets(mTweetListView, new TweetListRepository.LoadTweetListCallback() {
+        mTweetListRepository.getTweets(new TweetListRepository.LoadTweetListCallback() {
             @Override
             public void onFetchTokenStarted() {
                 mTweetListView.setProgressIndicator(true, "Fetching Token");
@@ -78,7 +87,6 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
 
             @Override
             public void onTweetListLoaded(List<Tweet> tweets, long page, boolean complete) {
-                Timber.d("onTweetListLoaded: %s", "tweets = [" + tweets.size());
                 mTweetListView.setTweets(tweets);
 
                 String tweetString = "";
@@ -91,8 +99,13 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
 
                 int quantity = 3;
                 Map<String, Integer> words = getWordMap(tweetString);
+
+                // Creating an priorityQueue. Keeps the least common element on top.
+                // Top element would be used to compare the count.
                 final PriorityQueue<WordCount> countHeap = new PriorityQueue<WordCount>(quantity);
 
+                // Go through the word map and compare the current word's count with the least in
+                // the count heap
                 for (final Entry<String, Integer> entry : words.entrySet()) {
                     if (countHeap.size() < quantity) {
                         countHeap.add(new WordCount(entry.getKey(), entry.getValue()));
@@ -102,6 +115,7 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
                     }
                 }
 
+                // ArrayMap sorts the map again by the key i.e. count
                 final Map<Integer, String> frequencyMap = new ArrayMap<>();
                 while (countHeap.size() > 0) {
                     WordCount remove = countHeap.remove();
@@ -109,14 +123,16 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
                     frequencyMap.put(remove.getCount(), remove.getWord());
                 }
 
-//                mTweetListView.showResult(sortByComparator(frequencyMap, false));
-
                 mTweetListView.showResult(frequencyMap);
             }
         }, 100);
 
     }
 
+    /**
+     * @param tweetString the string to be processed
+     * @return Returns Word of map with key as the word and Integer as value
+     */
     private Map<String, Integer> getWordMap(String tweetString) {
         final Map<String, Integer> wordMap = new HashMap<String, Integer>();
         String[] tweetStringArray = tweetString.split(" ");

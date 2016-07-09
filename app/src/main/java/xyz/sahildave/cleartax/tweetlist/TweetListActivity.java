@@ -41,6 +41,14 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
         mAdapter = new TweetListAdapter(this, new ArrayList<Tweet>(), this);
         mRecyclerView.setAdapter(mAdapter);
 
+        /*
+        Create a Presenter and send a Repository in the constructor
+        This Repository is based on the project flavour.
+        mock sends FakeTweetListRepository which reads a search result from String present in
+        the same file. It can also be used to read an Asset file using AssetProvider in the same
+        package.
+         */
+
         mTweetListPresenter = new TweetListPresenter(Injector.provideTweetListRepository(), this);
         mTweetListPresenter.setupTweetRecycler(mRecyclerView);
         mTweetListPresenter.loadTweets(true);

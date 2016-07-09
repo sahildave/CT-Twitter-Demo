@@ -23,7 +23,6 @@ import xyz.sahildave.cleartax.BuildConfig;
 import xyz.sahildave.cleartax.data.model.Bearer;
 import xyz.sahildave.cleartax.data.model.SearchResult;
 import xyz.sahildave.cleartax.data.model.Tweet;
-import xyz.sahildave.cleartax.tweetlist.TweetListContract;
 
 import static xyz.sahildave.cleartax.util.Common.checkNotNull;
 
@@ -83,8 +82,12 @@ public class TwitterListServiceImpl implements TwitterListService {
     public void destroy() {
     }
 
+    /**
+     * Get token from oauth call
+     * @param callback to send token back to repo
+     */
     @Override
-    public void getToken(TweetListContract.View contextView, final TweetTokenCallback callback) {
+    public void getToken(final TweetTokenCallback callback) {
         checkNotNull(twitterApiService);
 
         Map<String, Object> fieldMap = new ArrayMap<>();
@@ -110,9 +113,15 @@ public class TwitterListServiceImpl implements TwitterListService {
         });
     }
 
+    /**
+     * Add intercepter for Bearer token. Create a new client and make a query
+     *
+     * todo Make the query parameters efficient by using Url Builder
+     *
+     */
     @Override
-    public void getAllTweets(TweetListContract.View contextView, final long sinceId,
-                             final String token, final TweetListServiceCallbacks<List<Tweet>> callback) {
+    public void getAllTweets(final long sinceId, final String token,
+                             final TweetListServiceCallbacks<List<Tweet>> callback) {
         checkNotNull(twitterApiService);
         checkNotNull(token);
 
@@ -150,7 +159,6 @@ public class TwitterListServiceImpl implements TwitterListService {
         call.enqueue(new Callback<SearchResult>() {
             @Override
             public void onResponse(Call<SearchResult> call, Response<SearchResult> response) {
-                Timber.d("onResponse: %s", "call = [" + call + "], response = [" + response + "]");
                 if (response != null && response.isSuccessful()) {
                     SearchResult result = response.body();
                     List<Tweet> tweets = result.getTweets();
