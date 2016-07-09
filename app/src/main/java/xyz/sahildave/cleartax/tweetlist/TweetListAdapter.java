@@ -21,7 +21,6 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
     private final List<Tweet> mValues;
     private TweetItemListener mTweetItemListener;
     private int ITEM_LIST_CONTENT = R.layout.item_list_content;
-    private int ITEM_LIST_LOAD = R.layout.item_list_progress;
 
     public TweetListAdapter(List<Tweet> items, final TweetItemListener tweetItemListener) {
         mValues = items;
@@ -40,6 +39,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Tweet tweet = mValues.get(position);
         holder.mItem = tweet;
+        Timber.d("onBindViewHolder: %s", "Tweet = [" + tweet + "], position = [" + position + "]");
         if (tweet != null) {
             holder.mTitleView.setText(tweet.getText());
         }
@@ -77,7 +77,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
 
     @Override
     public int getItemViewType(final int position) {
-        return mValues.get(position) == null ? ITEM_LIST_LOAD : ITEM_LIST_CONTENT;
+        return ITEM_LIST_CONTENT;
     }
 
     @Override

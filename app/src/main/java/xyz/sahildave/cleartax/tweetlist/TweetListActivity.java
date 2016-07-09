@@ -2,8 +2,8 @@ package xyz.sahildave.cleartax.tweetlist;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -45,11 +45,12 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
 
     @Override
     public void setProgressIndicator(boolean active, String text) {
-        Snackbar.make(mCoordinatorLayout, text, Snackbar.LENGTH_SHORT).show();
+        ((AppCompatTextView) findViewById(R.id.progress_text)).setText(text);
     }
 
     @Override
     public void setTweets(List<Tweet> tweets) {
+        Common.crossFadeViews(mRecyclerView, findViewById(R.id.progress_root), Common.DURATION_LONG);
         mAdapter.addTweets(tweets);
     }
 
