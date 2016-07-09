@@ -12,14 +12,19 @@ import xyz.sahildave.cleartax.tweetlist.TweetListContract;
  */
 public interface TweetListRepository {
     interface LoadTweetListCallback {
-        void onTweetListLoading();
+        void onFetchTokenStarted();
 
-        void onTweetListLoaded(List<Tweet> tweets, boolean success);
+        void onFetchTokenComplete();
+
+        void onTweetListLoading(int page, int listSize);
+
+        void onTweetListLoaded(List<Tweet> tweets, int page, boolean success);
     }
 
     interface GetTweetCallback {
         void onTweetLoaded(Tweet Tweet, boolean success);
     }
 
-    void getTweets(TweetListContract.View contextView, int page, @NonNull LoadTweetListCallback callback);
+    void getTweets(TweetListContract.View contextView, int page,
+                   @NonNull LoadTweetListCallback callback, int limit);
 }

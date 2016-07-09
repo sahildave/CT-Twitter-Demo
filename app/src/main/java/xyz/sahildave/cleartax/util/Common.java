@@ -2,13 +2,16 @@ package xyz.sahildave.cleartax.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.view.Display;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by sahil on 6/3/16.
@@ -64,6 +67,26 @@ public class Common {
         Point size = new Point();
         display.getSize(size);
         return size;
+    }
+
+    public static String mapToString(Map<String, Integer> map) {
+        String result = "";
+        for (Object key : map.keySet()) {
+            Object value = map.get(key);
+            result += key + " : "+value+"\n";
+        }
+        return result;
+    }
+
+    public static void showMessageOK(Context context, String title, String message, DialogInterface.OnClickListener okListener) {
+        if(context == null) return;
+
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, okListener)
+                .create()
+                .show();
     }
 
     private static HashMap<String, Typeface> typefaces = new HashMap<String, Typeface>();

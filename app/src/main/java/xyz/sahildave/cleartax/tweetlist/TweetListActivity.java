@@ -2,6 +2,7 @@ package xyz.sahildave.cleartax.tweetlist;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -9,21 +10,26 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import xyz.sahildave.cleartax.Injector;
 import xyz.sahildave.cleartax.R;
 import xyz.sahildave.cleartax.data.model.Tweet;
+import xyz.sahildave.cleartax.util.Common;
 
 public class TweetListActivity extends AppCompatActivity implements TweetListContract.View, TweetItemListener {
 
     private TweetListPresenter mTweetListPresenter;
     private RecyclerView mRecyclerView;
     private TweetListAdapter mAdapter;
+    private View mCoordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tweet_list);
+
+        mCoordinatorLayout = findViewById(R.id.coordinatorlayout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -38,13 +44,20 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
     }
 
     @Override
-    public void setProgressIndicator(boolean active) {
-
+    public void setProgressIndicator(boolean active, String text) {
+        Snackbar.make(mCoordinatorLayout, text, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void setTweets(List<Tweet> tweets) {
+        mAdapter.addTweets(tweets);
+    }
 
+    @Override
+    public void showResult(Map<String, Integer> frequencyMap) {
+        String result = Common.mapToString(frequencyMap);
+
+        Common.showMessageOK(this, "Result", result, null);
     }
 
     @Override

@@ -41,6 +41,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
         Tweet tweet = mValues.get(position);
         holder.mItem = tweet;
         if (tweet != null) {
+            holder.mTitleView.setText(tweet.getText());
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
 
 import xyz.sahildave.cleartax.data.model.Tweet;
 
@@ -12,9 +13,11 @@ import xyz.sahildave.cleartax.data.model.Tweet;
  */
 public interface TweetListContract {
     interface View {
-        void setProgressIndicator(boolean active);
+        void setProgressIndicator(boolean active, String text);
 
         void setTweets(List<Tweet> tweets);
+
+        void showResult(Map<String, Integer> frequencyMap);
 
         void showError();
 

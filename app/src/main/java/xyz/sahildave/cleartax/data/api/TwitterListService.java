@@ -9,14 +9,22 @@ import xyz.sahildave.cleartax.tweetlist.TweetListContract;
  * Created by sahil on 6/3/16.
  */
 public interface TwitterListService {
+    interface TweetTokenCallback {
+        void onTokenStarted();
+        void onTokenReceived(String token, boolean success);
+    }
+
     interface TweetListServiceCallbacks<T> {
-        void onLoaded(T tweets);
+        void onTweetsLoaded(T tweets, int page);
     }
 
     void init();
 
     void destroy();
 
+    void getToken(TweetListContract.View contextView,
+                  TweetTokenCallback callback);
+
     void getAllTweets(TweetListContract.View contextView, int page,
-                      TweetListServiceCallbacks<List<Tweet>> callback);
+                      String token, TweetListServiceCallbacks<List<Tweet>> callback);
 }
