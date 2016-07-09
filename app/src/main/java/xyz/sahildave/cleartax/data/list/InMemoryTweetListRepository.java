@@ -80,6 +80,7 @@ class InMemoryTweetListRepository implements TweetListRepository {
                 callback.onTweetListLoading(page, mTweetList.size());
             }
         });
+        // TODO: 9/7/16 Filter more tweets by  entities.urls[n].display_url
     }
 
     private void addToTweetList(List<Tweet> tweets) {

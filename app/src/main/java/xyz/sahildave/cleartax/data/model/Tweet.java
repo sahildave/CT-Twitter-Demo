@@ -10,6 +10,10 @@ public class Tweet {
     private User mUser;
     @SerializedName("text")
     private String mText;
+    @SerializedName("id")
+    private long mId;
+    @SerializedName("id_str")
+    private String mUrl;
 
     public String getText() {
         return mText;
@@ -17,6 +21,14 @@ public class Tweet {
 
     public User getUser() {
         return mUser;
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public String getUrl() {
+        return mUrl;
     }
 
     @Override

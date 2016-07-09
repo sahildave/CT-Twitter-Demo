@@ -1,7 +1,10 @@
 package xyz.sahildave.cleartax.tweetlist;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
@@ -95,6 +98,10 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
 
     @Override
     public void tweetClicked(View v, Tweet clickedTweet) {
-
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        builder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse("https://twitter.com/sahildave1991/status/" + clickedTweet.getUrl()));
     }
 }
