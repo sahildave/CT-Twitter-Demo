@@ -19,6 +19,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
+import xyz.sahildave.cleartax.BuildConfig;
 import xyz.sahildave.cleartax.data.model.Bearer;
 import xyz.sahildave.cleartax.data.model.SearchResult;
 import xyz.sahildave.cleartax.data.model.Tweet;
@@ -58,7 +59,7 @@ public class TwitterListServiceImpl implements TwitterListService {
                 // Customize the request
                 Request request = original.newBuilder()
                         .header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-                        .header("Authorization", "Basic Rk40WE1QVVJ4a3hmeFJuaEtjNXpieE9OcDpsQkxLd2RsUXBhSFliT3d2a1pIRUprMzZSN0ViMmZmbVgyZk9PQ0didG54d2FhV0h1Ug==")
+                        .header("Authorization", "Basic " + BuildConfig.AUTHORIZATION_HEADER)
                         .method(original.method(), original.body())
                         .build();
 

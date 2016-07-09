@@ -72,7 +72,7 @@ public class Common {
         return size;
     }
 
-    public static String mapToString(Map<String, Integer> map) {
+    public static String mapToString(Map<Integer, String> map) {
         String result = "";
         for (Object key : map.keySet()) {
             Object value = map.get(key);

@@ -17,7 +17,7 @@ public interface TweetListContract {
 
         void setTweets(List<Tweet> tweets);
 
-        void showResult(Map<String, Integer> frequencyMap);
+        void showResult(Map<Integer, String> frequencyMap);
 
         void showError();
 

@@ -10,6 +10,8 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "String", "AUTHORIZATION_HEADER", "\"${getAuthHeader()}\""
     }
     buildTypes {
         release {
@@ -66,4 +68,9 @@ dependencies {
 
     compile 'com.jakewharton.timber:timber:4.1.0'
 
+}
+
+
+String getAuthHeader() {
+    return "FN4XMPURxkxfxRnhKc5zbxONp:lBLKwdlQpaHYbOwvkZHEJk36R7Eb2ffmX2fOOCGbtnxwaaWHuR".bytes.encodeBase64().toString()
 }

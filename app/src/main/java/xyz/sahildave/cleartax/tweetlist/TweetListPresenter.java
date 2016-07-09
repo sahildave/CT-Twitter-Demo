@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 import timber.log.Timber;
@@ -95,7 +96,7 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
                 Map<String, Integer> words = getWordMap(tweetString);
                 final PriorityQueue<WordCount> countHeap = new PriorityQueue<WordCount>(quantity);
 
-                for (final Map.Entry<String, Integer> entry : words.entrySet()) {
+                for (final Entry<String, Integer> entry : words.entrySet()) {
                     if (countHeap.size() < quantity) {
                         countHeap.add(new WordCount(entry.getKey(), entry.getValue()));
                     } else if (entry.getValue() > countHeap.peek().getCount()) {
@@ -104,15 +105,14 @@ public class TweetListPresenter implements TweetListContract.UserActionsListener
                     }
                 }
 
-                Timber.d("%s - %s", 1, countHeap.peek());
-
-                final Map<String, Integer> frequencyMap = new ArrayMap<>();
+                final Map<Integer, String> frequencyMap = new ArrayMap<>();
                 while (countHeap.size() > 0) {
                     WordCount remove = countHeap.remove();
                     Timber.d(remove.toString());
-                    frequencyMap.put(remove.getWord(), remove.getCount());
+                    frequencyMap.put(remove.getCount(), remove.getWord());
                 }
 
+//                mTweetListView.showResult(sortByComparator(frequencyMap, false));
 
                 mTweetListView.showResult(frequencyMap);
             }

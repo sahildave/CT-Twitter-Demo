@@ -19,7 +19,6 @@ import static xyz.sahildave.cleartax.util.Common.checkNotNull;
 class InMemoryTweetListRepository implements TweetListRepository {
 
     private final TwitterListService mTweetListServiceApi;
-    private boolean mGetAllTweetsCalled;
     private boolean mTokenReceived;
     private String mToken;
     private ArrayList<Tweet> mTweetList = new ArrayList<>();

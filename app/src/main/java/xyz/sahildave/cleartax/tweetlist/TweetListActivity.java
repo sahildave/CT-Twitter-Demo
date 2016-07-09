@@ -35,7 +35,7 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
         setSupportActionBar(toolbar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.item_list);
-        mAdapter = new TweetListAdapter(new ArrayList<Tweet>(), this);
+        mAdapter = new TweetListAdapter(this, new ArrayList<Tweet>(), this);
         mRecyclerView.setAdapter(mAdapter);
 
         mTweetListPresenter = new TweetListPresenter(Injector.provideTweetListRepository(), this);
@@ -55,8 +55,20 @@ public class TweetListActivity extends AppCompatActivity implements TweetListCon
     }
 
     @Override
-    public void showResult(Map<String, Integer> frequencyMap) {
-        String result = Common.mapToString(frequencyMap);
+    public void showResult(Map<Integer, String> frequencyMap) {
+        String result = "";
+
+        ArrayList<Integer> keys = new ArrayList<Integer>(frequencyMap.keySet());
+        for(int i=keys.size()-1; i>=0;i--){
+            Integer key = keys.get(i);
+            String value = frequencyMap.get(key);
+            result += key + " : " + value + "\n";
+        }
+//
+//        for (Integer key : frequencyMap.keySet()) {
+//            Object value = frequencyMap.get(key);
+//            result += key + " : " + value + "\n";
+//        }
 
         Common.showMessageOK(this, "Result", result, null);
     }

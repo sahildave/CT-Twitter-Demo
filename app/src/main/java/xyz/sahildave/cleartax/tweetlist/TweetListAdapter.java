@@ -1,11 +1,16 @@
 package xyz.sahildave.cleartax.tweetlist;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -19,13 +24,14 @@ import xyz.sahildave.cleartax.data.model.Tweet;
 public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.ViewHolder> {
 
     private final List<Tweet> mValues;
+    private final Context mContext;
     private TweetItemListener mTweetItemListener;
     private int ITEM_LIST_CONTENT = R.layout.item_list_content;
 
-    public TweetListAdapter(List<Tweet> items, final TweetItemListener tweetItemListener) {
+    public TweetListAdapter(Context context, List<Tweet> items, final TweetItemListener tweetItemListener) {
+        mContext = context;
         mValues = items;
         mTweetItemListener = tweetItemListener;
-        setHasStableIds(true);
     }
 
     @Override
@@ -42,6 +48,12 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
         Timber.d("onBindViewHolder: %s", "Tweet = [" + tweet + "], position = [" + position + "]");
         if (tweet != null) {
             holder.mTitleView.setText(tweet.getText());
+            int placeholderColor = Color.parseColor("#" + tweet.getUser().getPlaceholderColor());
+            ColorDrawable cd = new ColorDrawable(placeholderColor);
+            Glide.with(mContext).load(tweet.getUser().getProfileImageUrl())
+                    .placeholder(cd)
+                    .into(holder.mAvatarView);
+
         }
     }
 
@@ -85,20 +97,10 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
         return mValues.size();
     }
 
-    @Override
-    public long getItemId(final int position) {
-//            Tweet tweet = mValues.get(position);
-//            if (tweet != null) {
-//                return tweet.getTweetId();
-//            }
-        return super.getItemId(position);
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final View mView;
-        public final ImageView mIdView;
+        public final ImageView mAvatarView;
         public final TextView mTitleView;
-        public final TextView mExcerptView;
         public Tweet mItem;
         private final TweetItemListener mTweetItemListener;
 
@@ -106,9 +108,8 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.View
             super(view);
             mView = view;
             mTweetItemListener = tweetItemListener;
-            mIdView = (ImageView) view.findViewById(R.id.image);
+            mAvatarView = (ImageView) view.findViewById(R.id.image);
             mTitleView = (TextView) view.findViewById(R.id.title);
-            mExcerptView = (TextView) view.findViewById(R.id.excerpt);
             mView.setOnClickListener(this);
         }
 
